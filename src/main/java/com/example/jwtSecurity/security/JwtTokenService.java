@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Component;
 
+import com.example.jwtSecurity.entity.UserPrincipal;
 import com.example.jwtSecurity.repository.UserRepository;
 
 import io.jsonwebtoken.Claims;
@@ -56,5 +57,40 @@ public class JwtTokenService {
 				.setSubject(username).setIssuedAt(issuedAt).setExpiration(expiration)
 				.signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret))).compact();
 	}
+
+	public boolean validate(String jwt) {
+		
+		try {
+			Jwts.parser()
+	          .setSigningKey(secret)
+	          .parseClaimsJws(jwt);
+			return true;
+		} catch (Exception e) {
+			System.out.println("Invalid token");
+		}
+		return false;
+	}
+	
+	 public UserPrincipal getPrincipalFromAccessToken(String accessToken) {
+		    try {
+		      Claims claims = getTokenBody(accessToken);
+		      UserPrincipal principal = new UserPrincipal();
+		      principal.setId(claims.get(CLAIM_USER_ID, Long.class));
+		      principal.setUsername(claims.getSubject());
+		      principal.setRole(claims.get(CLAIM_USER_ROLE, String.class));
+		      return principal;
+		    } catch (Exception e) {
+		      return new UserPrincipal();
+		    }
+		  }
+
+	private Claims getTokenBody(String accessToken) {
+			return Jwts.parser()
+	          .setSigningKey(secret)
+	          .parseClaimsJws(accessToken)
+	          .getBody();
+	}
+	
+	
 
 }

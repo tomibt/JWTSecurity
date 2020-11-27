@@ -19,22 +19,34 @@ public class UserPrincipal implements UserDetails {
 	private Long id;
 	private String name;
 	private String username;
+
 	@JsonIgnore
 	private String email;
+
+	@JsonIgnore
+	private String password;
+
 	private String role;
+
+	private Collection<? extends GrantedAuthority> authorities;
+
+	public UserPrincipal() {
+
+	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 
-		return Collections.singletonList(new SimpleGrantedAuthority(this.role));
+		return authorities;
 	}
 
-	public UserPrincipal(Long id, String name, String username, String email, String role) {
+	public UserPrincipal(Long id, String name, String username, String email, String password, Collection<? extends GrantedAuthority> authorities) {
 		this.id = id;
 		this.name = name;
 		this.username = username;
 		this.email = email;
-		this.role = role;
+		this.password = password;
+		this.authorities = authorities;
 	}
 
 	public static UserPrincipal create(User user) {
@@ -48,8 +60,8 @@ public class UserPrincipal implements UserDetails {
 
 //		Dimitar - roles: user, admin
 
-		return new UserPrincipal(user.getId(), user.getName(), user.getUsername(), user.getEmail(),
-				authorities.toString());
+		return new UserPrincipal(user.getId(), user.getName(), user.getUsername(), user.getEmail(), user.getPassword(),
+				authorities);
 
 	}
 
@@ -77,18 +89,6 @@ public class UserPrincipal implements UserDetails {
 	public boolean isEnabled() {
 		// TODO Auto-generated method stub
 		return true;
-	}
-
-	@Override
-	public String getPassword() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getUsername() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

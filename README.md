@@ -1,2 +1,2 @@
-# JWTSecurity
-JWT Security SpringBoot
+# codeAcademy
+Code academy classes
